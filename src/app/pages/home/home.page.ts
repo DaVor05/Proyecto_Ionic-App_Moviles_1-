@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonList, IonAlert } from '@ionic/angular/standalone';
-import { Task } from '../models/task.models';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonList, IonAlert, IonIcon } from '@ionic/angular/standalone';
+import { Task } from '../../models/task.models';
+import {addIcons} from 'ionicons';
+import {addOutline, addCircleOutline} from 'ionicons/icons';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonList, IonAlert, FormsModule],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonList, IonAlert, FormsModule, IonIcon ],
 })
 export class HomePage {
 
@@ -35,8 +37,10 @@ export class HomePage {
   ];
 
   constructor() {
+    addIcons({ addCircleOutline });
     console.log(this.tasks);
   }
+
 
   //Alerta de Error
   showAlert(message: string) {
