@@ -99,10 +99,13 @@ export class HomePage {
     this.newTaskStr = '';
   }
 
-  confirmDelete(index: number) {
+  // CORREGIDO: Recibe la tarea, calcula internamente el índice y usa el formato estricto de la rúbrica
+  confirmDelete(task: Task) {
+    const index = this.tasks.indexOf(task);
+
     this.alertService.confirmAlert(
-      '¿Eliminar Tarea?',
-      `¿Estás seguro de borrar: "${this.tasks[index].titulo}"?`,
+      'Aviso',
+      `Dese borrar la tarea ${task.titulo}`,
       () => this.deleteTask(index)
     );
   }
