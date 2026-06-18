@@ -8,8 +8,12 @@ import {
 import { Task } from '../../models/task.models';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, trashOutline } from 'ionicons/icons';
-// Importación corregida apuntando a tu clase Alert
-import { Alert } from '../../services/alert';
+import { AlertService } from '../../services/alert';
+
+import { Preferences } from '@capacitor/preferences';
+import { Storage } from '@ionic/storage-angular';
+
+const storage = new Storage();
 
 @Component({
   selector: 'app-home',
@@ -28,15 +32,15 @@ export class HomePage {
   newTaskStr: string = '';
   tasks: Task[] = []; 
 
-  constructor(private alertService: Alert) {
-    // Registramos los dos iconos que usa la vista
+  constructor(private alertService: AlertService) {
     addIcons({ addCircleOutline, trashOutline });
   }
 
   async ionViewWillEnter() {
-    const localData = localStorage.getItem('my_tasks');
-    if (localData) {
-      this.tasks = JSON.parse(localData);
+    const { value } = await Preferences.get({ key: 'my_tasks' });
+    
+    if (value) {
+      this.tasks = JSON.parse(value);
     } else {
       this.tasks = [
         {
@@ -54,15 +58,18 @@ export class HomePage {
           prioridad: 'Alta'
         },
       ];
-      this.saveToLocalStorage();
+      await this.saveToLocalStorage();
     }
   }
 
-  saveToLocalStorage() {
-    localStorage.setItem('my_tasks', JSON.stringify(this.tasks));
+  async saveToLocalStorage() {
+    await Preferences.set({
+      key: 'my_tasks',
+      value: JSON.stringify(this.tasks)
+    });
   }
 
-  addTask() {
+  async addTask() {
     const cleanTitle = this.newTaskStr.trim();
 
     if (cleanTitle === '') {
@@ -88,7 +95,7 @@ export class HomePage {
     };
 
     this.tasks.push(newTask);
-    this.saveToLocalStorage();
+    await this.saveToLocalStorage();
     this.newTaskStr = '';
   }
 
@@ -100,13 +107,18 @@ export class HomePage {
     );
   }
 
-  deleteTask(index: number) {
+  async deleteTask(index: number) {
     this.tasks.splice(index, 1);
-    this.saveToLocalStorage();
+    await this.saveToLocalStorage();
   }
 
-  actualizarPosiciones(event: any) {
+  async actualizarPosiciones(event: any) {
+    console.log("El arreglo antes del cambio:", this.tasks);
+    
     this.tasks = event.detail.complete(this.tasks);
-    this.saveToLocalStorage();
+    
+    console.log("El arreglo despues del cambio:", this.tasks);
+    
+    await this.saveToLocalStorage();
   }
 }
