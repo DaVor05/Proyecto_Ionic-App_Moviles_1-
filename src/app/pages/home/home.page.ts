@@ -11,9 +11,6 @@ import { addCircleOutline, trashOutline } from 'ionicons/icons';
 import { AlertService } from '../../services/alert';
 
 import { Preferences } from '@capacitor/preferences';
-import { Storage } from '@ionic/storage-angular';
-
-const storage = new Storage();
 
 @Component({
   selector: 'app-home',
@@ -82,7 +79,7 @@ export class HomePage {
     );
 
     if (isDuplicate) {
-      this.alertService.showAlert('Duplicado', '¡Esta tarea ya existe en tu lista!');
+      this.alertService.showAlert('Duplicado', '¡Esta tarea ya existe in tu lista!');
       return;
     }
 
@@ -99,15 +96,20 @@ export class HomePage {
     this.newTaskStr = '';
   }
 
-  // CORREGIDO: Recibe la tarea, calcula internamente el índice y usa el formato estricto de la rúbrica
-  confirmDelete(task: Task) {
-    const index = this.tasks.indexOf(task);
+  confirmDelete(task: any) {
+    const index = this.tasks.findIndex(t => t.id === task.id || t.titulo === task.titulo);
 
-    this.alertService.confirmAlert(
-      'Aviso',
-      `Dese borrar la tarea ${task.titulo}`,
-      () => this.deleteTask(index)
-    );
+    if (index !== -1) {
+      // CORREGIDO: Se pasan los parámetros en el orden exacto de alert.ts
+      // 1. Header, 2. Mensaje, 3. Función OK, 4. Texto cancelar, 5. Texto confirmar
+      this.alertService.confirmAlert(
+        'Aviso',
+        `¿Desea borrar la tarea "${task.titulo}"?`,
+        () => this.deleteTask(index),
+        'NO',
+        'SI'
+      );
+    }
   }
 
   async deleteTask(index: number) {
@@ -116,12 +118,7 @@ export class HomePage {
   }
 
   async actualizarPosiciones(event: any) {
-    console.log("El arreglo antes del cambio:", this.tasks);
-    
     this.tasks = event.detail.complete(this.tasks);
-    
-    console.log("El arreglo despues del cambio:", this.tasks);
-    
     await this.saveToLocalStorage();
   }
 }

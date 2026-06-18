@@ -1,15 +1,18 @@
-import { Injectable } from '@angular/core';
-import { alertController } from '@ionic/core';
+import { Injectable, inject } from '@angular/core';
+// CORRECCIÓN: Usar el AlertController compatible con la versión Standalone de Ionic
+import { AlertController } from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlertService {
+  // Inyección del controlador nativo de Ionic
+  private alertCtrl = inject(AlertController);
 
   constructor() { }
 
   async showAlert(header: string, message: string) {
-    const alert = await alertController.create({
+    const alert = await this.alertCtrl.create({
       header: header,
       message: message,
       buttons: ['OK']
@@ -25,7 +28,7 @@ export class AlertService {
     cancelText: string = 'Cancelar', 
     confirmText: string = 'Aceptar'
   ) {
-    const alert = await alertController.create({
+    const alert = await this.alertCtrl.create({
       header: header,
       message: message,
       buttons: [
